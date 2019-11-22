@@ -1,0 +1,13 @@
+-- improve ladder movement ok
+-- fix animaion 
+-- make more tiles      doing until end
+-- make map (zoom when working) doing until end
+
+
+--------------scorpion
+ -- make healthbar invisible ok
+  -- rest some min ok
+  -- make 2 box collider for scorpion fail :(((
+ 
+ ------display 
+  -- damage ok
