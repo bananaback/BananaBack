@@ -1,11 +1,12 @@
 Coin = Object:extend()
 
-function Coin:new(x, y, typeOfCoin, speedX)
+function Coin:new(x, y, typeOfCoin, speedX, speedcoin)
     self.x = x
     self.y = y
     self.type = typeOfCoin
     self.width = 8
     self.height = 8
+    self.speedCoin = speedcoin
     
     self.sprite = love.graphics.newImage('art/money.png')
     self.grid = anim8.newGrid(self.width, self.height, self.sprite:getWidth(), self.sprite:getHeight())
@@ -47,10 +48,23 @@ function Coin:new(x, y, typeOfCoin, speedX)
     self.anim = anim8.newAnimation(self.grid(6, 4), 0.1)
   end
     self.vx = speedX
-    self.vy = 50
+    if self.speedCoin == 'slow' then
+        self.vy = 50
+        self.vylosingSpeed = 1
+        self.vxlosingSpeed = 0.02
+    elseif self.speedCoin == 'medium' then
+        self.vy = 100
+        self.vylosingSpeed = 2
+        self.vxlosingSpeed = 0.04
+    elseif self.speedCoin == 'fast' then
+        self.vy = 100
+        self.vylosingSpeed = 4
+        self.vxlosingSpeed = 0.04
+    end
     world:add(self, self.x, self.y, self.width, self.height)
     self.bounceTime = 0
     self.isCoin = true
+    self.lastlong = 30
 end
 
 function Coin:update(dt)
@@ -71,13 +85,27 @@ function Coin:update(dt)
             end
         end
     end
-    
-    if self.vy < 50 then
-        self.vy = self.vy + 1
+    ---- tao them gia tri chia 2
+    if self.vy < 100 then
+        self.vy = self.vy + self.vylosingSpeed
     end
     if math.abs(self.vx) > 0 then
-        if self.vx < 0 then self.vx = self.vx + 0.02 end
-        if self.vx > 0 then self.vx = self.vx - 0.02 end
+        if self.vx < 0 then self.vx = self.vx + self.vxlosingSpeed end
+        if self.vx > 0 then self.vx = self.vx - self.vxlosingSpeed end
+    end
+    self.lastlong = self.lastlong - dt 
+    if self.lastlong < 0 then
+        self:boom()
+    end
+end
+
+function Coin:boom()
+    for coinnum, coinnow in ipairs(listOfCoins) do
+	      if coinnow == self then
+            world:remove(self)
+            table.remove(listOfCoins, coinnum) 
+            break 
+        end
     end
 end
 

@@ -39,14 +39,7 @@ function NormalPunch:update(dt)
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 3, 10, 2.5, 'yellow', 1))
                 other.health = other.health - 3
                 other.healthBarOpacity = 100
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, 5))
-                table.insert(listOfCoins, Coin(self.x, self.y, 3, 6))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, 7))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, 8))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, -5))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, -6))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, -7))
-                table.insert(listOfCoins, Coin(self.x, self.y, 2, -8))
+                addRandomCoin(self.x, self.y, love.math.random(1, 2))
             end
             self:boom()
             
@@ -56,6 +49,20 @@ function NormalPunch:update(dt)
     self.lifeTime = self.lifeTime - 1
     if self.lifeTime <= 0 then
         self:boom()
+    end
+end
+
+function addRandomCoin(x, y, coinNum)
+    spawnX = x
+    spawnY = y
+    coinNumber = coinNum
+    t = {-6, -5, 5, 6}
+    t2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
+    t3 = {"fast", "medium", "slow"}
+    --- ranNum to To determine the type of coin to be created
+    --- Series t contains the X velocities of the generated coin
+    for i = 1, coinNumber do
+        table.insert(listOfCoins, Coin(spawnX, spawnY, t2[love.math.random(1, #t2)], t[love.math.random(1, #t)], t3[love.math.random(1, #t3)]))
     end
 end
 

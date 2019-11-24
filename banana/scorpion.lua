@@ -70,7 +70,7 @@ function Scorpion:update(dt)
         if self.talkTime > 0 then
             self.talkTime = self.talkTime - dt
         else
-            self.talkTime = 0.5
+            self.talkTime = 0.3
             table.insert(listOfPopUps, PopUp(self.x + math.random(-8, 24), self.y - math.random(-4, 4), 'z', 7, 2, 'purple', 0.5))
         end
     end

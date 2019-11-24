@@ -45,7 +45,8 @@ function Player:update(dt)
         if other.isBlock then return 'slide' 
         elseif other.isLadder then return 'cross' 
         elseif other.isWater then return 'cross' 
-        elseif other.isScorpion then return 'cross' end
+        elseif other.isScorpion then return 'cross' 
+        elseif other.isCoin then return 'cross'end
     end
     
     ------
@@ -109,6 +110,10 @@ function Player:update(dt)
                 self.hurtDuration = 100
                 print('ouch')
             end
+        end
+        if other.isCoin and other.bounceTime >= 3 then
+            table.insert(listOfPopUps, PopUp(other.x, other.y, '+1', 5, 2.5, 'yellow', 1))
+            other:boom()
         end
     end
     -----

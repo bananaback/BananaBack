@@ -1,3 +1,50 @@
+function love.run()
+    if love.math then
+	love.math.setRandomSeed(os.time())
+    end
+
+    if love.load then love.load(arg) end
+
+    -- We don't want the first frame's dt to include time taken by love.load.
+    if love.timer then love.timer.step() end
+
+    local dt = 0
+
+    -- Main loop time.
+    while true do
+        -- Process events.
+        if love.event then
+	    love.event.pump()
+	    for name, a,b,c,d,e,f in love.event.poll() do
+	        if name == "quit" then
+		    if not love.quit or not love.quit() then
+		        return a
+		    end
+	        end
+		love.handlers[name](a,b,c,d,e,f)
+	    end
+        end
+
+	-- Update dt, as we'll be passing it to update
+	if love.timer then
+	    love.timer.step()
+	    dt = love.timer.getDelta()
+	end
+
+	-- Call update and draw
+	if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+
+	if love.graphics and love.graphics.isActive() then
+	    love.graphics.clear(love.graphics.getBackgroundColor())
+	    love.graphics.origin()
+            if love.draw then love.draw() end
+	    love.graphics.present()
+	end
+
+	if love.timer then love.timer.sleep(0.001) end
+    end
+end
+
 function love.load()
     Object = require'classic'
     anim8 = require 'anim8'
@@ -58,7 +105,25 @@ function love.load()
     end
     ---
     
+    DARK = {0, 0, 0}
+    DARKGRAY = {1, 1, 1}
+    LIGHTGRAY = {1, 1, 1}
+    GRAY = {1, 1, 1}
+    WHITE = {1, 1, 1}
+    DARKRED = {1, 1, 1}
+    RED = {1, 1, 1}
+    ORANGE = {1, 1, 1}
+    DARKYELLOW = {1, 1, 1}
+    LIGHTORANGE = {1, 1, 1}
+    YELLOW = {1, 1, 1}
+    DARKGREEN = {1, 1, 1}
+    GREEN = {1, 1, 1}
+    LIGHTGREEN = {1, 1, 1}
+    DARKBLUE = {1, 1, 1}
+    BLUE = {1, 1, 1}
+    LIGHTBLUE = {1, 1, 1}
     
+    love.graphics.setColor(WHITE)
     
     Camera = require "Camera"
     camera = Camera()
@@ -88,26 +153,34 @@ function love.load()
     
     require 'player'
     player = Player()
+    
 end
 
+local period = 1/60 -- 60 updates per second
+local t = 0.0 -- accumulator
+
 function love.update(dt)
-    camera:update(dt)
-    camera:follow(player.x + player.width / 2, player.y + player.height / 2)
-    player:update(dt)
-    for enenum, enenow in ipairs(listOfEnemies) do
-        enenow:update(dt)
-    end
-    for bulletnum, bulletnow in ipairs(listOfBullets) do
-        bulletnow:update(dt)
-    end
-    for bulletnum, bulletnow in ipairs(listOfBullets) do
-        bulletnow:update(dt)
-    end
-    for popupnum, popupnow in ipairs(listOfPopUps) do
-        popupnow:update(dt)
-    end
-    for coinnum, coinnow in ipairs(listOfCoins) do
-        coinnow:update(dt)
+    t = t + dt
+    while t > period do
+        camera:update(dt)
+        camera:follow(player.x + player.width / 2, player.y + player.height / 2)
+        player:update(dt)
+        for enenum, enenow in ipairs(listOfEnemies) do
+            enenow:update(dt)
+        end
+        for bulletnum, bulletnow in ipairs(listOfBullets) do
+            bulletnow:update(dt)
+        end
+        for bulletnum, bulletnow in ipairs(listOfBullets) do
+            bulletnow:update(dt)
+        end
+        for popupnum, popupnow in ipairs(listOfPopUps) do
+            popupnow:update(dt)
+        end
+        for coinnum, coinnow in ipairs(listOfCoins) do
+            coinnow:update(dt)
+        end
+        t = t - period
     end
 end
 
