@@ -80,7 +80,7 @@ function Player:update(dt)
     
     end
     -----
-    local goalX, goalY = self.x + self.vx * dt, self.y + self.vy * dt
+    local goalX, goalY = self.x + self.vx * dt, self.y + self.vy * dt 
     local actualX, actualY, cols, len = world:move(self, goalX, goalY, playerFilter)
     self.x, self.y = actualX, actualY
     -- deal with the collisions 

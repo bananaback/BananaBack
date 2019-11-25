@@ -84,6 +84,7 @@ function Scorpion:update(dt)
     end
     
     if self.health <= 0 then
+        table.insert(listOfPopUps, PopUp(self.x, self.y, 'Bye!', 10, 2, 'blue', 1))
         self:boom()
     end
 end

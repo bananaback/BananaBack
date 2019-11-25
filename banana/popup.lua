@@ -37,13 +37,15 @@ end
 function PopUp:draw()
     love.graphics.setFont(self.font)
     if self.color == 'white' then
-        love.graphics.setColor(1, 1, 1, self.opacity)
+        love.graphics.setColor(WHITE, self.opacity)
     elseif self.color == 'yellow' then
-        love.graphics.setColor(248/255, 252/255, 0, self.opacity)  
+        love.graphics.setColor(YELLOW, self.opacity)  
     elseif self.color == 'purple' then
-        love.graphics.setColor(202/255, 0, 252/255, self.opacity)  
+        love.graphics.setColor(DARKGREEN, self.opacity)  
     elseif self.color == 'red' then
-        love.graphics.setColor(1, 0, 0, self.opacity)  
+        love.graphics.setColor(RED, self.opacity)
+    elseif self.color == 'blue' then
+        love.graphics.setColor(BLUE, self.opacity)
     end
     love.graphics.print(self.damage, self.x, self.y)
 end

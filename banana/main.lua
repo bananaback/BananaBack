@@ -106,22 +106,21 @@ function love.load()
     ---
     
     DARK = {0, 0, 0}
-    DARKGRAY = {1, 1, 1}
-    LIGHTGRAY = {1, 1, 1}
-    GRAY = {1, 1, 1}
+    DARKGRAY = {85/255, 85/255, 85/255}
+    LIGHTGRAY = {170/255, 170/255, 170/255}
     WHITE = {1, 1, 1}
-    DARKRED = {1, 1, 1}
-    RED = {1, 1, 1}
-    ORANGE = {1, 1, 1}
-    DARKYELLOW = {1, 1, 1}
-    LIGHTORANGE = {1, 1, 1}
-    YELLOW = {1, 1, 1}
-    DARKGREEN = {1, 1, 1}
-    GREEN = {1, 1, 1}
-    LIGHTGREEN = {1, 1, 1}
-    DARKBLUE = {1, 1, 1}
-    BLUE = {1, 1, 1}
-    LIGHTBLUE = {1, 1, 1}
+    DARKRED = {85/255, 0, 0}
+    RED = {170/255, 0, 0}
+    ORANGE = {255/255, 85/255, 0}
+    DARKYELLOW = {170/255, 85/255, 0}
+    LIGHTORANGE = {255/255, 170/255, 0}
+    YELLOW = {255/255, 255/255, 85/255}
+    DARKGREEN = {0, 85/255, 0}
+    GREEN = {0, 170/255, 0}
+    LIGHTGREEN = {170/255, 255/255, 0}
+    DARKBLUE = {0, 85/255, 170/255}
+    BLUE = {0, 170/255, 255/255}
+    LIGHTBLUE = {85/255, 255/255, 255/255}
     
     love.graphics.setColor(WHITE)
     
@@ -153,34 +152,30 @@ function love.load()
     
     require 'player'
     player = Player()
-    
+    nt=love.timer.getTime()
 end
 
 local period = 1/60 -- 60 updates per second
 local t = 0.0 -- accumulator
 
 function love.update(dt)
-    t = t + dt
-    while t > period do
-        camera:update(dt)
-        camera:follow(player.x + player.width / 2, player.y + player.height / 2)
-        player:update(dt)
-        for enenum, enenow in ipairs(listOfEnemies) do
-            enenow:update(dt)
-        end
-        for bulletnum, bulletnow in ipairs(listOfBullets) do
-            bulletnow:update(dt)
-        end
-        for bulletnum, bulletnow in ipairs(listOfBullets) do
-            bulletnow:update(dt)
-        end
-        for popupnum, popupnow in ipairs(listOfPopUps) do
-            popupnow:update(dt)
-        end
-        for coinnum, coinnow in ipairs(listOfCoins) do
-            coinnow:update(dt)
-        end
-        t = t - period
+    camera:update(dt)
+    camera:follow(player.x + player.width / 2, player.y + player.height / 2)
+    player:update(dt)
+    for enenum, enenow in ipairs(listOfEnemies) do
+        enenow:update(dt)
+    end
+    for bulletnum, bulletnow in ipairs(listOfBullets) do
+        bulletnow:update(dt)
+    end
+    for bulletnum, bulletnow in ipairs(listOfBullets) do
+        bulletnow:update(dt)
+    end
+    for popupnum, popupnow in ipairs(listOfPopUps) do
+        popupnow:update(dt)
+    end
+    for coinnum, coinnow in ipairs(listOfCoins) do
+        coinnow:update(dt)
     end
 end
 
