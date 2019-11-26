@@ -12,3 +12,5 @@
   -- damage ok
   
 ---- save and load map ---- finish last
+
+--- add health bar

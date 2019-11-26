@@ -101,11 +101,11 @@ function Player:update(dt)
         if other.isScorpion then
             if self.hurting == false and (other.state == 'idleleft' or other.state == 'idleright') then
                 if self.x < other.x then
-                    self.x = self.x - 20
-                    self.vy = -250
+                    --self.x = self.x - 20
+                    --self.vy = -250
                 elseif self.x > other.x then
-                    self.x = self.x + 20
-                    self.vy = -250
+                    --self.x = self.x + 20
+                    --self.vy = -250
                 end
                 self.hurtDuration = 100
                 print('ouch')
