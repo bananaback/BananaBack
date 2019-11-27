@@ -1,8 +1,8 @@
 Player = Object:extend()
 -- 16 * 24
 function Player:new()
-    self.x = 100
-    self.y = 200
+    self.x = 50
+    self.y = 0
     self.width = 16
     self.height = 24
     self.scaleX = -1
@@ -36,10 +36,54 @@ function Player:new()
     self.climbing = false
     self.hurtDuration = 0
     self.canMove = true
+    
+    -----
+    self.image = love.graphics.newImage("art/playerbarss_1.png")
+    self.mask = love.graphics.newImage("art/mymask.png")
+
+    --quads, each quad contains between 1 and i bars
+    self.quads = { }
+    for i = 1, 20 do
+        self.quads[i] = love.graphics.newQuad((i-1)*8, 0, 160 - i*8, 16, 160, 16)
+    end
+    
+    self.health = 20
+    self.blueEnergy = 20
+    self.greenEnergy = 20
+    --- alertbar
+    self.alertbar = love.graphics.newImage('art/alertbar.png')
+    self.alertgrid = anim8.newGrid(32, 20, self.alertbar:getWidth(), self.alertbar:getHeight())
+    self.alertAnimations = {}
+    self.alertAnimations.alert1 = anim8.newAnimation(self.alertgrid('1-2', 1), 0.1)
+    self.alertAnimations.alert2 = anim8.newAnimation(self.alertgrid('3-4', 1), 0.1)
+    self.alertAnimations.alert3 = anim8.newAnimation(self.alertgrid('5-6', 1), 0.1)
+
+    self.alert1State = "pause"
+    self.alert2State = "pause"
+    self.alert3State = "pause"
 end
 
 function Player:update(dt)
     self.anim:update(dt)
+    self.alertAnimations.alert1:update(dt)
+    self.alertAnimations.alert2:update(dt)
+    self.alertAnimations.alert3:update(dt)
+
+    if self.alert1State == "pause" then
+        self.alertAnimations.alert1:pauseAtStart()  
+    else 
+        self.alertAnimations.alert1:resume()
+    end
+    if self.alert2State == "pause" then
+        self.alertAnimations.alert2:pauseAtStart()  
+    else 
+        self.alertAnimations.alert2:resume()
+    end
+    if self.alert3State == "pause" then
+        self.alertAnimations.alert3:pauseAtStart()  
+    else 
+        self.alertAnimations.alert3:resume()
+    end
     -----
     local function playerFilter(item, other)
         if other.isBlock then return 'slide' 
@@ -107,7 +151,15 @@ function Player:update(dt)
                     --self.x = self.x + 20
                     --self.vy = -250
                 end
+                if self.health > 0 then 
+                    self.health = self.health - 1
+                end
+                self.alert1State = "resume"
+                Timer.after(1, function() self.alert1State = "pause" end)
                 self.hurtDuration = 100
+                local listOfSaying = {"ouch", "it's hurt!", "becareful!", "I hate scorpion!"}
+                table.insert(listOfPopUps, PopUp(self.x, self.y, '-1', 15, 3, 'red', 1))
+                table.insert(listOfPopUps, PopUp(self.x, self.y, listOfSaying[math.random(1, #listOfSaying)], 15, 2, 'blue', 0.5))
                 print('ouch')
             end
         end
@@ -183,5 +235,36 @@ end
 function Player:draw()
     love.graphics.setColor(1, 1, 1)
     self.anim:draw(self.sprite, self.x + self.width / 2, self.y + self.height / 2, nil, self.scaleX, 1, 8, 12)
-    --love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    --love.graphics.rectangle('line', self.x, self.y, self.width, self.height
+end
+
+function Player:draw2()
+  love.graphics.setColor(1, 1, 1)
+    local bars_1 = self.health -- math.ceil(health_1 * 20) --20 bars in total, inverted since we mask it
+    local bars_2 = self.blueEnergy
+    local bars_3 = self.greenEnergy
+    --just some scaling
+    love.graphics.push()
+    love.graphics.scale(2)
+    
+    love.graphics.draw(self.image)
+    
+    --handle negative values and overflows
+    if bars_1 >= 1 and bars_1 <= 20 then
+        --i used the power of photoshop to get the position of the (first) bar relative to the base image
+        love.graphics.draw(self.mask, self.quads[bars_1], 85 + 8*bars_1, 4)
+    end
+    if bars_2 >= 1 and bars_2 <= 20 then
+        --i used the power of photoshop to get the position of the (first) bar relative to the base image
+        love.graphics.draw(self.mask, self.quads[bars_2], 85 + 8*bars_2, 4+20)
+    end
+    if bars_3 >= 1 and bars_3 <= 20 then
+        --i used the power of photoshop to get the position of the (first) bar relative to the base image
+        love.graphics.draw(self.mask, self.quads[bars_3], 85 + 8*bars_3, 24 + 20)
+    end
+    love.graphics.pop()
+    self.alertAnimations.alert1:draw(self.alertbar, 500-8, 4, nil, 2, 2)
+    self.alertAnimations.alert2:draw(self.alertbar, 500-8, 44, nil, 2, 2)
+    self.alertAnimations.alert3:draw(self.alertbar, 500-8, 84, nil, 2, 2)
+    
 end
