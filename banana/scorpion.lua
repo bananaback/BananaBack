@@ -41,6 +41,7 @@ function Scorpion:update(dt)
         self.switchTime = 2.2
 
         -- Handle state transitions at timer expiry
+        if self.state ~= 'back' then
         if self.state == 'moveleft' then
             self.state = 'idleleft'
         elseif self.state == 'moveright' then
@@ -50,6 +51,7 @@ function Scorpion:update(dt)
         else -- must be 'idleright' as it's the only remaining possibility
             self.state = 'moveright'
         end
+        end
     end
 
     -- Handle state transitions when hitting the end
@@ -58,7 +60,8 @@ function Scorpion:update(dt)
     elseif self.state == 'moveright' and self.x >= self.targetX2 then
       self.state = 'moveleft'
     end
-
+    
+    if self.state ~= 'back' then
     if self.state == 'moveleft' then
         self.vx = -25
         self.scaleX = -1
@@ -73,6 +76,22 @@ function Scorpion:update(dt)
             self.talkTime = 0.3
             table.insert(listOfPopUps, PopUp(self.x + math.random(-8, 24), self.y - math.random(-4, 4), 'z', 7, 2, 'purple', 0.5))
         end
+    end
+  else
+        Timer.after(1, function() 
+            local rand = love.math.random(0, 1, 2)
+            if rand == 0 then 
+                self.state = 'moveleft' 
+            elseif rand == 1 then
+                self.state = 'moveright' 
+            elseif rand == 2 then
+                self.state = 'idleleft'
+            else
+                self.state = 'idleright'
+            end
+            end)
+        if self.vx < 0 then self.vx = self.vx+ 1 end
+        if self.vx > 0 then self.vx = self.vx - 1 end
     end
 
     if self.vx ~= 0 then

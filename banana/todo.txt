@@ -13,4 +13,6 @@
   
 ---- save and load map ---- finish last
 
---- add health bar
+--- add health bar ok
+--- knock back enemy with wind punch
+--- xem xet lai co nen dung timer hay khong

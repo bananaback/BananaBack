@@ -124,10 +124,13 @@ function love.load()
     
     require 'scorpion'
     listOfEnemies = {}
-    table.insert(listOfEnemies, Scorpion(350, 0, 70, 70))
+    table.insert(listOfEnemies, Scorpion(400, 0, 30, 30))
     
     require 'playerskill/normalpunch'
+    require 'playerskill/windpunch'
+    require 'playerskill/windbullet'
     listOfBullets = {}
+    table.insert(listOfBullets, WindBullet1(200, 200, 1))
     
     require 'popup'
     listOfPopUps = {}
@@ -200,10 +203,31 @@ function love.keypressed(key)
     end
     if key == 'space' and player.isGrounded and player.attacking == false and player.hurting == false then
         player.attackDuration = 30
-        if player.scaleX == -1 then
-            table.insert(listOfBullets, NormalPunch(player.x - player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
-        elseif player.scaleX == 1 then
-            table.insert(listOfBullets, NormalPunch(player.x + player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
+        if player.currentWeapon == "normalPunch" then
+            if player.scaleX == -1 then
+                table.insert(listOfBullets, NormalPunch(player.x - player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                table.insert(listOfBullets, NormalPunch(player.x + player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
+            end
+        elseif player.currentWeapon == "windPunch" then
+            if player.scaleX == -1 then
+                table.insert(listOfBullets, WindPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                table.insert(listOfBullets, WindPunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
+            end
+            player.greenEnergy = player.greenEnergy - 1
+            player.alert3State = "resume"
+                Timer.after(0.5, function() player.alert3State = "pause" end)
+        elseif player.currentWeapon == "windBullet1" then
+            if player.scaleX == -1 then
+                table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2, -1))
+            elseif player.scaleX == 1 then
+                table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2, 1))
+            end
+          
+            player.greenEnergy = player.greenEnergy - 3
+            player.alert3State = "resume"
+                Timer.after(0.5, function() player.alert3State = "pause" end)
         end
     end
 end

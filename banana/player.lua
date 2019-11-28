@@ -61,6 +61,8 @@ function Player:new()
     self.alert1State = "pause"
     self.alert2State = "pause"
     self.alert3State = "pause"
+    
+    self.currentWeapon = "windBullet1"
 end
 
 function Player:update(dt)
@@ -159,7 +161,7 @@ function Player:update(dt)
                 self.hurtDuration = 100
                 local listOfSaying = {"ouch", "it's hurt!", "becareful!", "I hate scorpion!"}
                 table.insert(listOfPopUps, PopUp(self.x, self.y, '-1', 15, 3, 'red', 1))
-                table.insert(listOfPopUps, PopUp(self.x, self.y, listOfSaying[math.random(1, #listOfSaying)], 15, 2, 'blue', 0.5))
+                table.insert(listOfPopUps, PopUp(self.x, self.y, listOfSaying[math.random(1, #listOfSaying)], 10, 2, 'blue', 0.5))
                 print('ouch')
             end
         end
