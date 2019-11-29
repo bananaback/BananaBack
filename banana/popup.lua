@@ -46,6 +46,8 @@ function PopUp:draw()
         love.graphics.setColor(RED, self.opacity)
     elseif self.color == 'blue' then
         love.graphics.setColor(BLUE, self.opacity)
+    elseif self.color == 'orange' then
+        love.graphics.setColor(ORANGE, self.opacity)
     end
     love.graphics.print(self.damage, self.x, self.y)
 end

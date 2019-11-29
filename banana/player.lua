@@ -17,7 +17,10 @@ function Player:new()
     self.animations.idle = anim8.newAnimation(self.grid(2, 1), 0.1) 
     self.animations.walk = anim8.newAnimation(self.grid('3-6', 1), 0.1)
     self.animations.jump = anim8.newAnimation(self.grid(7, 1), 0.1)
-    self.animations.attack = anim8.newAnimation(self.grid2(1, 2), 0.1)
+    self.animations.attack = anim8.newAnimation(self.grid2(6, 4), 0.1)
+    self.animations.windattack = anim8.newAnimation(self.grid2(5, 5), 0.1)
+    self.animations.waterattack = anim8.newAnimation(self.grid2(7, 5), 0.1)
+    self.animations.fireattack = anim8.newAnimation(self.grid2(6, 5), 0.1)
     self.animations.climb = anim8.newAnimation(self.grid('8-9', 1), 0.1)
     self.anim = self.animations.idle
     ------
@@ -46,6 +49,7 @@ function Player:new()
     for i = 1, 20 do
         self.quads[i] = love.graphics.newQuad((i-1)*8, 0, 160 - i*8, 16, 160, 16)
     end
+    self.quads[0] = love.graphics.newQuad(0, 0, 160, 16, 160, 16)
     
     self.health = 20
     self.blueEnergy = 20
@@ -62,11 +66,52 @@ function Player:new()
     self.alert2State = "pause"
     self.alert3State = "pause"
     
-    self.currentWeapon = "windBullet1"
+    self.currentWeapon = "firePunch"
+    
+    self.alert1Timer = Timer.new()
+    self.alert2Timer = Timer.new()
+    self.alert3Timer = Timer.new()
+    self.reloadGreenTimer = Timer.new()
+    self.reloadGreenTimer:every(1, function() if self.greenEnergy < 20 then self.greenEnergy = self.greenEnergy + 1 end end)
+    self.regenHealthTimer = Timer.new()
+    self.regenHealthTimer:every(5, function() if self.health < 20 then self.health = self.health + 1 end end)
+    
+    self.burnTime = 0
+    self.isBurning = true
+    self.burnEffectTimer = Timer.new()
+    self.burnEffectTimer:every(0.2, function() 
+        if self.isBurning then
+            --self.health = self.health - 0.1
+            self.healthBarOpacity = 100
+            table.insert(listOfPopUps, PopUp(self.x + self.width / 2 + love.math.random(-8, 8), self.y + self.height / 2 + love.math.random(-8, 8), '(#)', 5, 2.5, 'orange', 0.2))
+            table.insert(listOfPopUps, PopUp(self.x + self.width / 2 + love.math.random(-8, 8), self.y + self.height / 2 + love.math.random(-8, 8), '(#)', 5, 2.5, 'orange', 0.2))
+        end end)
+      
+    self.burnTimer = Timer.new()
+    self.burnTimer:every(2, function() 
+        if self.isBurning then
+            if self.health > 0 then self.health = self.health - 1 end
+            self.alert1State = "resume"
+            self.alert1Timer:after(0.5, function() player.alert1State = "pause" end)
+        end end)
 end
 
 function Player:update(dt)
+    if self.burnTime > 0 then
+        self.burnTime = self.burnTime - 1
+        self.isBurning = true
+    else
+        self.isBurning = false
+    end
+    
     self.anim:update(dt)
+    self.burnEffectTimer:update(dt)
+    self.burnTimer:update(dt)
+    self.alert1Timer:update(dt)
+    self.alert2Timer:update(dt)
+    self.alert3Timer:update(dt)
+    self.reloadGreenTimer:update(dt)
+    self.regenHealthTimer:update(dt)
     self.alertAnimations.alert1:update(dt)
     self.alertAnimations.alert2:update(dt)
     self.alertAnimations.alert3:update(dt)
@@ -157,12 +202,18 @@ function Player:update(dt)
                     self.health = self.health - 1
                 end
                 self.alert1State = "resume"
-                Timer.after(1, function() self.alert1State = "pause" end)
+                self.alert1Timer:after(1, function() self.alert1State = "pause" end)
                 self.hurtDuration = 100
                 local listOfSaying = {"ouch", "it's hurt!", "becareful!", "I hate scorpion!"}
                 table.insert(listOfPopUps, PopUp(self.x, self.y, '-1', 15, 3, 'red', 1))
                 table.insert(listOfPopUps, PopUp(self.x, self.y, listOfSaying[math.random(1, #listOfSaying)], 10, 2, 'blue', 0.5))
                 print('ouch')
+            end
+            if other.isBurning then
+                self.burnTime = 150
+            end
+            if self.isBurning then
+                other.burnTime = 150
             end
         end
         if other.isCoin and other.bounceTime >= 3 then
@@ -220,7 +271,7 @@ function Player:update(dt)
     if self.hurting then self.state = 'hurt'
     elseif self.relax then self.state = 'idle'
     elseif self.walking then self.state = 'walk' 
-    elseif self.isGrounded == false and self.touchLadder == false then self.state = 'jump'
+    elseif self.isGrounded == false and self.touchLadder == false and self.attacking == false then self.state = 'jump'
     elseif self.attacking and self.hurting == false then self.state = 'attack' 
     elseif self.climbing then self.state = 'climbing'
     end
@@ -229,7 +280,14 @@ function Player:update(dt)
     elseif self.state == 'idle' then self.anim = self.animations.idle 
     elseif self.state == 'walk' then self.anim = self.animations.walk
     elseif self.state == 'jump' then self.anim = self.animations.jump
-    elseif self.state == 'attack' then self.anim = self.animations.attack
+    elseif self.state == 'attack' then 
+    if self.currentWeapon == 'windBullet1' or self.currentWeapon == 'windPunch' then
+        self.anim = self.animations.windattack
+    elseif self.currentWeapon == 'normalPunch' then
+        self.anim = self.animations.attack
+    elseif self.currentWeapon == 'fireBullet1' or self.currentWeapon == 'firePunch' then
+        self.anim = self.animations.fireattack
+    end
     elseif self.state == 'climbing' then self.anim = self.animations.climb
     end
 end
@@ -252,19 +310,25 @@ function Player:draw2()
     love.graphics.draw(self.image)
     
     --handle negative values and overflows
-    if bars_1 >= 1 and bars_1 <= 20 then
+    if bars_1 >= 0 and bars_1 <= 20 then
         --i used the power of photoshop to get the position of the (first) bar relative to the base image
         love.graphics.draw(self.mask, self.quads[bars_1], 85 + 8*bars_1, 4)
     end
-    if bars_2 >= 1 and bars_2 <= 20 then
+    if bars_2 >= 0 and bars_2 <= 20 then
         --i used the power of photoshop to get the position of the (first) bar relative to the base image
         love.graphics.draw(self.mask, self.quads[bars_2], 85 + 8*bars_2, 4+20)
     end
-    if bars_3 >= 1 and bars_3 <= 20 then
+    if bars_3 >= 0 and bars_3 <= 20 then
         --i used the power of photoshop to get the position of the (first) bar relative to the base image
         love.graphics.draw(self.mask, self.quads[bars_3], 85 + 8*bars_3, 24 + 20)
     end
     love.graphics.pop()
+    love.graphics.setColor(1, 1, 1)
+    ---
+    local font = love.graphics.newFont(32) -- the number denotes the font size
+    love.graphics.setFont(font)
+    love.graphics.print(self.currentWeapon, 750, 600)
+    ---
     self.alertAnimations.alert1:draw(self.alertbar, 500-8, 4, nil, 2, 2)
     self.alertAnimations.alert2:draw(self.alertbar, 500-8, 44, nil, 2, 2)
     self.alertAnimations.alert3:draw(self.alertbar, 500-8, 84, nil, 2, 2)

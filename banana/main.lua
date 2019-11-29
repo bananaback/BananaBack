@@ -124,13 +124,17 @@ function love.load()
     
     require 'scorpion'
     listOfEnemies = {}
-    table.insert(listOfEnemies, Scorpion(400, 0, 30, 30))
+    table.insert(listOfEnemies, Scorpion(450, 0, 70, 70))
     
     require 'playerskill/normalpunch'
     require 'playerskill/windpunch'
     require 'playerskill/windbullet'
+    require 'playerskill/windbullet2'
+    require 'playerskill/firebullet1'
+    require 'playerskill/firebullet2'
+    require 'playerskill/firepunch'
     listOfBullets = {}
-    table.insert(listOfBullets, WindBullet1(200, 200, 1))
+    table.insert(listOfBullets, FireBullet1(200, 200, -1))
     
     require 'popup'
     listOfPopUps = {}
@@ -201,15 +205,16 @@ function love.keypressed(key)
         player.isGrounded = false
         player.vy = -370
     end
-    if key == 'space' and player.isGrounded and player.attacking == false and player.hurting == false then
-        player.attackDuration = 30
+    if key == 'space'  and player.attacking == false and player.hurting == false then
         if player.currentWeapon == "normalPunch" then
+            player.attackDuration = 30
             if player.scaleX == -1 then
                 table.insert(listOfBullets, NormalPunch(player.x - player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
                 table.insert(listOfBullets, NormalPunch(player.x + player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
             end
-        elseif player.currentWeapon == "windPunch" then
+        elseif player.currentWeapon == "windPunch" and player.greenEnergy >= 1 then
+            player.attackDuration = 30
             if player.scaleX == -1 then
                 table.insert(listOfBullets, WindPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
@@ -217,17 +222,90 @@ function love.keypressed(key)
             end
             player.greenEnergy = player.greenEnergy - 1
             player.alert3State = "resume"
-                Timer.after(0.5, function() player.alert3State = "pause" end)
-        elseif player.currentWeapon == "windBullet1" then
+            player.alert3Timer:after(0.5, function() player.alert3State = "pause" end)
+        elseif player.currentWeapon == "windBullet1" and player.greenEnergy >= 2 then
+            player.attackDuration = 30
             if player.scaleX == -1 then
-                table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2, -1))
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, WindBullet2(player.x - player.width / 2 - 1, player.y + player.height / 2 - 8, -1))
+                else
+                    table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, -1))
+                end
+              
+                table.insert(listOfBullets, WindPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
-                table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2, 1))
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, WindBullet2(player.x + player.width / 2 + 1, player.y + player.height / 2 - 8, 1))
+                else
+                    table.insert(listOfBullets, WindBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, 1))
+                end
+                
+                table.insert(listOfBullets, WindPunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
             end
           
-            player.greenEnergy = player.greenEnergy - 3
+            player.greenEnergy = player.greenEnergy - 2
             player.alert3State = "resume"
-                Timer.after(0.5, function() player.alert3State = "pause" end)
+            player.alert3Timer:after(0.5, function() player.alert3State = "pause" end)
+        elseif player.currentWeapon == "firePunch" and player.health >= 1 then
+            player.attackDuration = 30
+            if player.scaleX == -1 then
+                table.insert(listOfBullets, FirePunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                table.insert(listOfBullets, FirePunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
+            end
+            player.health = player.health - 1
+            player.alert1State = "resume"
+            player.alert1Timer:after(0.5, function() player.alert1State = "pause" end)
+        elseif player.currentWeapon == "fireBullet1" and player.health >= 2 then
+            player.attackDuration = 30
+            if player.scaleX == -1 then
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, FireBullet2(player.x - player.width / 2 - 1, player.y + player.height / 2 - 8, -1))
+                else
+                    table.insert(listOfBullets, FireBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, -1))
+                end
+              
+                table.insert(listOfBullets, FirePunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, FireBullet2(player.x + player.width / 2 + 1, player.y + player.height / 2 - 8, 1))
+                else
+                    table.insert(listOfBullets, FireBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, 1))
+                end
+                
+                table.insert(listOfBullets, FirePunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
+            end
+          
+            player.health = player.health - 2
+            player.alert1State = "resume"
+            player.alert1Timer:after(0.5, function() player.alert1State = "pause" end)
         end
+    end
+    
+    if key == '1' then
+        player.currentWeapon = 'normalPunch'
+    end
+    if key == '2' then
+        player.currentWeapon = 'windPunch'
+    end
+    if key == '3' then
+        player.currentWeapon = 'windBullet1'
+    end
+    if key == '4' then
+        player.currentWeapon = 'firePunch'
+    end
+    if key == '5' then
+        player.currentWeapon = 'fireBullet1'
+    end
+    if key == '6' then
+        table.insert(listOfEnemies, Scorpion(450, 0, 70, 70))
     end
 end

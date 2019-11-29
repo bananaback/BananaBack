@@ -15,4 +15,7 @@
 
 --- add health bar ok
 --- knock back enemy with wind punch
---- xem xet lai co nen dung timer hay khong
+--- xem xet lai co nen dung timer hay khong       ok dung
+--- tao ra mot sprite moi cho dan gio   ok
+
+----tao ra dan lua 2  OK, va cham voi nguoi choi dan lua 1 OK, them cu dam lua OK, hieu ung chay OK, hoi mau theo thoi gian OK

@@ -11,7 +11,10 @@ function WindBullet1:new(x, y, direction)
     if self.scaleX == 1 then self.vx = 50 elseif self.scaleX == -1 then self.vx = -50 end
     self.vy = 0
     world:add(self, self.x, self.y, self.width, self.height)
-    Timer.after(5, function() self:boom() end)
+    self.bulletTimer = Timer.new()
+    self.bulletTimer:after(5, function() self.bulletTimer:clear() self:boom() end)
+    self.damageYet = false
+    self.isBullet1 = true
 end
 
 function WindBullet1:update(dt)
@@ -27,17 +30,25 @@ function WindBullet1:update(dt)
     for i = 1, len do
         local other = cols[i].other
         if other.isScorpion then
-            if self.scaleX == 1 self.x < other.x then
+            if self.scaleX == 1 and self.x < other.x then
                 other.vx = 100
                 other.state = 'back'
             end
-            if self.scaleX == -1 self.x > other.x then
+            if self.scaleX == -1 and self.x > other.x then
                 other.vx = -100
                 other.state = 'back'
+            end
+            if self.damageYet == false then
+                table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 3, 10, 2.5, 'yellow', 1))
+                other.health = other.health - 3
+                other.healthBarOpacity = 100
+                addRandomCoin(self.x, self.y, love.math.random(1, 2))
+                self.damageYet = true
             end
             self:boom()
         end
     end
+    self.bulletTimer:update(dt)
 end
 
 function WindBullet1:boom()
