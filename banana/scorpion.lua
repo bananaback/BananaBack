@@ -28,7 +28,7 @@ function Scorpion:new(x, y, targetX1, tarGetX2)
     self.burnTimer = Timer.new()
     self.burnTimer:every(0.2, function() 
         if self.isBurning then
-            self.health = self.health - 0.1
+            self.health = self.health - 0.5
             self.healthBarOpacity = 100
             table.insert(listOfPopUps, PopUp(self.x + self.width / 2 + love.math.random(-8, 8), self.y + self.height / 2 + love.math.random(-8, 8), '(#)', 5, 2.5, 'orange', 0.2))
         end end)
@@ -42,14 +42,24 @@ function Scorpion:update(dt)
         self.isBurning = false
     end
     
-    
+    if self.vy < 150 then self.vy = self.vy + 5 end
     
     local function scorpionFilter(item, other)
-        if other.isBlock then return 'slide' end
+        if other.isBlock then return 'slide' 
+        elseif other.isScorpion then return 'cross'   end
     end
     local goalX, goalY = self.x + self.vx * dt, self.y + self.vy * dt
     local actualX, actualY, cols, len = world:move(self, goalX, goalY, scorpionFilter)
     self.x, self.y = actualX, actualY
+    
+    for i = 1, len do
+        local other = cols[i].other
+        if other.isScorpion then
+            if self.isBurning then
+                other.burnTime = 150
+            end
+        end
+    end
     
     
     
@@ -132,6 +142,7 @@ function Scorpion:boom()
     for scornum, scornow in ipairs(listOfEnemies) do
 	      if scornow == self then
             self.burnTimer:clear()
+            addRandomCoin(self.x, self.y, love.math.random(2, 3))
             world:remove(self)
             table.remove(listOfEnemies, scornum) 
             break 

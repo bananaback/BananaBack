@@ -73,6 +73,8 @@ function Player:new()
     self.alert3Timer = Timer.new()
     self.reloadGreenTimer = Timer.new()
     self.reloadGreenTimer:every(1, function() if self.greenEnergy < 20 then self.greenEnergy = self.greenEnergy + 1 end end)
+    self.reloadBlueTimer = Timer.new()
+    self.reloadBlueTimer:every(1, function() if self.blueEnergy < 20 then self.blueEnergy = self.blueEnergy + 1 end end)
     self.regenHealthTimer = Timer.new()
     self.regenHealthTimer:every(5, function() if self.health < 20 then self.health = self.health + 1 end end)
     
@@ -111,6 +113,7 @@ function Player:update(dt)
     self.alert2Timer:update(dt)
     self.alert3Timer:update(dt)
     self.reloadGreenTimer:update(dt)
+    self.reloadBlueTimer:update(dt)
     self.regenHealthTimer:update(dt)
     self.alertAnimations.alert1:update(dt)
     self.alertAnimations.alert2:update(dt)
@@ -287,6 +290,8 @@ function Player:update(dt)
         self.anim = self.animations.attack
     elseif self.currentWeapon == 'fireBullet1' or self.currentWeapon == 'firePunch' then
         self.anim = self.animations.fireattack
+    elseif self.currentWeapon == 'waterBullet1' or self.currentWeapon == 'waterPunch' then
+        self.anim = self.animations.waterattack
     end
     elseif self.state == 'climbing' then self.anim = self.animations.climb
     end

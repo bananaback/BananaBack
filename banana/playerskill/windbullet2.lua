@@ -37,18 +37,19 @@ function WindBullet2:update(dt)
         end
         if other.isScorpion then
             if self.scaleX == 1 and self.x < other.x then
-                other.vx = 150
+                --other.vx = 100
                 other.state = 'back'
             end
             if self.scaleX == -1 and self.x > other.x then
-                other.vx = -150
+                --other.vx = -100
                 other.state = 'back'
             end
             if self.damageYet == false then
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 5, 10, 2.5, 'yellow', 1))
                 other.health = other.health - 5
                 other.healthBarOpacity = 100
-                addRandomCoin(self.x, self.y, love.math.random(1, 2))
+                other.vy = -150
+                --addRandomCoin(self.x, self.y, love.math.random(1, 2))
                 self.damageYet = true
             end
             self:boom()
@@ -62,6 +63,7 @@ function WindBullet2:boom()
     for windbullet2num, windbullet2now in ipairs(listOfBullets) do
         if windbullet2now == self then
             world:remove(self)
+            self.bullet2Timer:clear()
             table.remove(listOfBullets, windbullet2num) 
             break 
         end

@@ -114,7 +114,7 @@ function love.load()
     camera = Camera()
     --camera:setFollowStyle('PLATFORMER')
     camera:setFollowStyle('SCREEN_BY_SCREEN')
-    camera.scale = 3
+    camera.scale = 2
     
     require 'ladder'
     gameObjects = {}
@@ -133,6 +133,9 @@ function love.load()
     require 'playerskill/firebullet1'
     require 'playerskill/firebullet2'
     require 'playerskill/firepunch'
+    require 'playerskill/waterpunch'
+    require 'playerskill/waterbullet1'
+    require 'playerskill/waterbullet2'
     listOfBullets = {}
     table.insert(listOfBullets, FireBullet1(200, 200, -1))
     
@@ -207,14 +210,14 @@ function love.keypressed(key)
     end
     if key == 'space'  and player.attacking == false and player.hurting == false then
         if player.currentWeapon == "normalPunch" then
-            player.attackDuration = 30
+            player.attackDuration = 15
             if player.scaleX == -1 then
                 table.insert(listOfBullets, NormalPunch(player.x - player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
                 table.insert(listOfBullets, NormalPunch(player.x + player.width / 2, player.y + player.height / 2 - 4, player.scaleX))
             end
         elseif player.currentWeapon == "windPunch" and player.greenEnergy >= 1 then
-            player.attackDuration = 30
+            player.attackDuration = 15
             if player.scaleX == -1 then
                 table.insert(listOfBullets, WindPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
@@ -224,7 +227,7 @@ function love.keypressed(key)
             player.alert3State = "resume"
             player.alert3Timer:after(0.5, function() player.alert3State = "pause" end)
         elseif player.currentWeapon == "windBullet1" and player.greenEnergy >= 2 then
-            player.attackDuration = 30
+            player.attackDuration = 15
             if player.scaleX == -1 then
                 local critChance = love.math.random(1, 3)
                 if critChance == 1 then
@@ -251,7 +254,7 @@ function love.keypressed(key)
             player.alert3State = "resume"
             player.alert3Timer:after(0.5, function() player.alert3State = "pause" end)
         elseif player.currentWeapon == "firePunch" and player.health >= 1 then
-            player.attackDuration = 30
+            player.attackDuration = 15
             if player.scaleX == -1 then
                 table.insert(listOfBullets, FirePunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
@@ -261,7 +264,7 @@ function love.keypressed(key)
             player.alert1State = "resume"
             player.alert1Timer:after(0.5, function() player.alert1State = "pause" end)
         elseif player.currentWeapon == "fireBullet1" and player.health >= 2 then
-            player.attackDuration = 30
+            player.attackDuration = 15
             if player.scaleX == -1 then
                 local critChance = love.math.random(1, 3)
                 if critChance == 1 then
@@ -287,6 +290,48 @@ function love.keypressed(key)
             player.health = player.health - 2
             player.alert1State = "resume"
             player.alert1Timer:after(0.5, function() player.alert1State = "pause" end)
+            
+        elseif player.currentWeapon == "waterPunch" and player.blueEnergy >= 1 then
+            player.burnTime = 0
+            player.attackDuration = 15
+            if player.scaleX == -1 then
+                table.insert(listOfBullets, WaterPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                table.insert(listOfBullets, WaterPunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
+            end
+            player.blueEnergy = player.blueEnergy - 1
+            player.alert2State = "resume"
+            player.alert2Timer:after(0.5, function() player.alert2State = "pause" end)
+            
+        elseif player.currentWeapon == "waterBullet1" and player.blueEnergy >= 2 then
+            player.burnTime = 0
+            player.attackDuration = 15
+            if player.scaleX == -1 then
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, WaterBullet2(player.x - player.width / 2 - 1, player.y + player.height / 2 - 8, -1))
+                else
+                    table.insert(listOfBullets, WaterBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, -1))
+                end
+              
+                table.insert(listOfBullets, WaterPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
+            elseif player.scaleX == 1 then
+                local critChance = love.math.random(1, 3)
+                if critChance == 1 then
+                    table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
+                    table.insert(listOfBullets, WaterBullet2(player.x + player.width / 2 + 1, player.y + player.height / 2 - 8, 1))
+                else
+                    table.insert(listOfBullets, WaterBullet1(player.x + player.width / 2, player.y + player.height / 2 - 4, 1))
+                end
+                
+                table.insert(listOfBullets, WaterPunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
+            end
+          
+            player.blueEnergy = player.blueEnergy - 2
+            player.alert2State = "resume"
+            player.alert2Timer:after(0.5, function() player.alert2State = "pause" end)
+            
         end
     end
     
@@ -307,5 +352,11 @@ function love.keypressed(key)
     end
     if key == '6' then
         table.insert(listOfEnemies, Scorpion(450, 0, 70, 70))
+    end
+    if key == '7' then
+        player.currentWeapon = 'waterPunch'
+    end
+    if key == '8' then
+        player.currentWeapon = 'waterBullet1'
     end
 end

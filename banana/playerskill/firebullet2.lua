@@ -38,7 +38,7 @@ function FireBullet2:update(dt)
                 other.health = other.health - 15
                 other.healthBarOpacity = 100
                 other.burnTime = 300
-                addRandomCoin(self.x, self.y, love.math.random(2, 3))
+                --addRandomCoin(self.x, self.y, love.math.random(2, 3))
                 self.damageYet = true
             end
             self:boom()
@@ -52,6 +52,7 @@ function FireBullet2:boom()
     for firebullet2num, firebullet2now in ipairs(listOfBullets) do
         if firebullet2now == self then
             world:remove(self)
+            self.firebullet2Timer:clear()
             table.remove(listOfBullets, firebullet2num) 
             break 
         end

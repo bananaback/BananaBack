@@ -39,7 +39,7 @@ function NormalPunch:update(dt)
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 3, 10, 2.5, 'yellow', 1))
                 other.health = other.health - 3
                 other.healthBarOpacity = 100
-                addRandomCoin(self.x, self.y, love.math.random(1, 2))
+                --addRandomCoin(self.x, self.y, love.math.random(1, 2))
             end
             self:boom()
             
