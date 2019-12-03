@@ -46,13 +46,15 @@ function love.run()
 end
 
 function love.load()
+    love.profiler = require('profile') 
+    love.profiler.start()
     Object = require'classic'
     Timer = require "timer"
     anim8 = require 'anim8'
     love.graphics.setDefaultFilter('nearest', 'nearest')
     
     bump = require 'bump'
-    world = bump.newWorld(8)
+    world = bump.newWorld(16)
     
     require 'block'
     listOfBlocks = {}
@@ -155,8 +157,13 @@ end
 
 local period = 1/60 -- 60 updates per second
 local t = 0.0 -- accumulator
-
+love.frame = 0
 function love.update(dt)
+    love.frame = love.frame + 1
+    if love.frame%100 == 0 then
+        love.report = love.profiler.report(20)
+        love.profiler.reset()
+    end
     Timer.update(dt)
     camera:update(dt)
     camera:follow(player.x + player.width / 2, player.y + player.height / 2)
@@ -206,9 +213,13 @@ function love.draw()
     for effectobjectnum2, effectobjectnow2 in ipairs(listOfEffectObjects) do
         effectobjectnow2:draw()
     end
+    love.graphics.print(love.report or "Please wait...")
     camera:detach()
     camera:draw()
     player:draw2()
+    --print(love.graphics.getState().drawcalls)
+
+
 end
 
 function love.keypressed(key)

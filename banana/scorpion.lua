@@ -151,6 +151,7 @@ end
 
 
 function Scorpion:draw()
+    love.graphics.setColor(1, 1, 1)
     self.anim:draw(self.sprite, self.x + self.width / 2, self.y + self.height / 2, nil, self.scaleX, 1, 8, 8)
     --love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
     love.graphics.setColor(50 / 255, 168 / 255, 82 / 255, self.healthBarOpacity)
