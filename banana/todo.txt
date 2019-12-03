@@ -20,7 +20,7 @@
 
 ----tao ra dan lua 2  OK, va cham voi nguoi choi dan lua 1 OK, them cu dam lua OK, hieu ung chay OK, hoi mau theo thoi gian OK
 ----------------
---- hieu ung dan nuoc
+--- hieu ung dan nuoc, tro lai nhu cu, them sprite vao thang animation cua bo cap luon
 -- talking reload
 -- hieu ung dan gio
--- lam lai sprite hieu ung
+-- lam lai sprite hieu ung  OK

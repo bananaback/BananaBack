@@ -48,7 +48,8 @@ function WindBullet2:update(dt)
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 5, 10, 2.5, 'yellow', 1))
                 other.health = other.health - 5
                 other.healthBarOpacity = 100
-                other.vy = -150
+                other.vy = -150    
+                --table.insert(listOfEffectObjects, WindBlow(other.x, other.y))
                 --addRandomCoin(self.x, self.y, love.math.random(1, 2))
                 self.damageYet = true
             end

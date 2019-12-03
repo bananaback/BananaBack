@@ -114,7 +114,7 @@ function love.load()
     camera = Camera()
     --camera:setFollowStyle('PLATFORMER')
     camera:setFollowStyle('SCREEN_BY_SCREEN')
-    camera.scale = 2
+    camera.scale = 3
     
     require 'ladder'
     gameObjects = {}
@@ -145,6 +145,8 @@ function love.load()
     require 'coin'
     listOfCoins = {}
     
+    listOfEffectObjects = {}
+    require'freezeeffect'
     
     require 'player'
     player = Player()
@@ -174,6 +176,9 @@ function love.update(dt)
     for coinnum, coinnow in ipairs(listOfCoins) do
         coinnow:update(dt)
     end
+    for effectobjectnum, effectobjectnow in ipairs(listOfEffectObjects) do
+        effectobjectnow:update(dt)
+    end
 end
 
 function love.draw()
@@ -197,6 +202,9 @@ function love.draw()
     end
     for coinnum2, coinnow2 in ipairs(listOfCoins) do
         coinnow2:draw()
+    end
+    for effectobjectnum2, effectobjectnow2 in ipairs(listOfEffectObjects) do
+        effectobjectnow2:draw()
     end
     camera:detach()
     camera:draw()
@@ -307,7 +315,7 @@ function love.keypressed(key)
             player.burnTime = 0
             player.attackDuration = 15
             if player.scaleX == -1 then
-                local critChance = love.math.random(1, 3)
+                local critChance = love.math.random(1, 1)
                 if critChance == 1 then
                     table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
                     table.insert(listOfBullets, WaterBullet2(player.x - player.width / 2 - 1, player.y + player.height / 2 - 8, -1))
@@ -317,7 +325,7 @@ function love.keypressed(key)
               
                 table.insert(listOfBullets, WaterPunch(player.x - player.width / 2 - 1, player.y + player.height / 2 - 4, player.scaleX))
             elseif player.scaleX == 1 then
-                local critChance = love.math.random(1, 3)
+                local critChance = love.math.random(1, 1)
                 if critChance == 1 then
                     table.insert(listOfPopUps, PopUp(player.x + math.random(-4, 4), player.y, 'crit!', 10, 2.5, 'yellow', 1))
                     table.insert(listOfBullets, WaterBullet2(player.x + player.width / 2 + 1, player.y + player.height / 2 - 8, 1))
@@ -328,7 +336,7 @@ function love.keypressed(key)
                 table.insert(listOfBullets, WaterPunch(player.x + player.width / 2 + 1, player.y + player.height / 2 - 4, player.scaleX))
             end
           
-            player.blueEnergy = player.blueEnergy - 2
+            --player.blueEnergy = player.blueEnergy - 2
             player.alert2State = "resume"
             player.alert2Timer:after(0.5, function() player.alert2State = "pause" end)
             

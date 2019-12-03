@@ -39,7 +39,9 @@ function WaterBullet2:update(dt)
             if self.damageYet == false then
                 other.health = other.health - 5
                 other.healthBarOpacity = 100
+                other.freezeTime = 300
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 5, 10, 2.5, 'yellow', 1))
+                table.insert(listOfEffectObjects, FreezeEffect(other.x, other.y, 4))
                 self.damageYet = true
             end
             self:boom()

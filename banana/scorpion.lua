@@ -32,6 +32,11 @@ function Scorpion:new(x, y, targetX1, tarGetX2)
             self.healthBarOpacity = 100
             table.insert(listOfPopUps, PopUp(self.x + self.width / 2 + love.math.random(-8, 8), self.y + self.height / 2 + love.math.random(-8, 8), '(#)', 5, 2.5, 'orange', 0.2))
         end end)
+      
+    self.freezeTime = 0
+    self.isFreezing = false
+    self.freezeX = 1
+    self.freezeY = 1
 end
 
 function Scorpion:update(dt)
@@ -42,13 +47,28 @@ function Scorpion:update(dt)
         self.isBurning = false
     end
     
+    if self.freezeTime > 0 then
+        self.freezeTime = self.freezeTime - 1
+        self.isFreezing = true
+    else
+        self.isFreezing = false
+    end
+    
+    if self.isFreezing then 
+        self.freezeX = 0
+        self.freezeY = 0
+    else
+        self.freezeX = 1
+        self.freezeY = 1
+    end
+    
     if self.vy < 150 then self.vy = self.vy + 5 end
     
     local function scorpionFilter(item, other)
         if other.isBlock then return 'slide' 
         elseif other.isScorpion then return 'cross'   end
     end
-    local goalX, goalY = self.x + self.vx * dt, self.y + self.vy * dt
+    local goalX, goalY = self.x + self.vx * self.freezeX * dt, self.y + self.vy * self.freezeY * dt
     local actualX, actualY, cols, len = world:move(self, goalX, goalY, scorpionFilter)
     self.x, self.y = actualX, actualY
     
