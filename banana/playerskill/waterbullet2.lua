@@ -39,7 +39,6 @@ function WaterBullet2:update(dt)
             if self.damageYet == false then
                 other.health = other.health - 5
                 other.healthBarOpacity = 100
-                other.freezeTime = 300
                 table.insert(listOfPopUps, PopUp(other.x + 8 + math.random(-2, 2), self.y, 5, 10, 2.5, 'yellow', 1))
                 table.insert(listOfEffectObjects, FreezeEffect(other.x, other.y, 4))
                 self.damageYet = true
@@ -63,6 +62,7 @@ function WaterBullet2:boom()
 end
 
 function WaterBullet2:draw()
+    love.graphics.setColor(1, 1, 1)
     love.graphics.draw(self.sprite, self.x + self.width / 2, self.y + self.height / 2, nil, self.scaleX, 1, 8, 8)
     --love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
 end

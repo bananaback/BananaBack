@@ -1,6 +1,6 @@
 FreezeEffect = Object:extend()
 
-function FreezeEffect:new(x, y, lifeTime, decreaseSpeed)
+function FreezeEffect:new(x, y, lifeTime)
     self.width = 16
     self.height = 16
     self.x = x
@@ -16,7 +16,7 @@ function FreezeEffect:new(x, y, lifeTime, decreaseSpeed)
     self.freezeEffectTimer = Timer.new()
     self.freezeEffectTimer:after(self.lifeTime, function() self.freezeEffectTimer:clear() self:boom() end)
     self.damageYet = false
-    self.opacity = 1
+    self.opacity = 0.5
     
 end
 
@@ -41,7 +41,7 @@ function FreezeEffect:update(dt)
         --    end
         --end
     --end
-    self.opacity = self.opacity - 1/300
+    --self.opacity = self.opacity - 1/300
     self.freezeEffectTimer:update(dt)
 end
 
@@ -59,6 +59,6 @@ end
 function FreezeEffect:draw()
     love.graphics.setColor(1, 1, 1, self.opacity)
     self.anim:draw(self.sprite, self.x, self.y)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    --love.graphics.setColor(1, 1, 1)
+    --love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
 end
